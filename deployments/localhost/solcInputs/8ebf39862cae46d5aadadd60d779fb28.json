@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Library.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\n\r\npragma solidity 0.8.13;\r\n\r\ncontract Perpustakaan {\r\n    struct Book {\r\n        string judul;\r\n        uint256 tahunDibuat;\r\n        string penulis;\r\n    }\r\n\r\n    // Mapping untuk ISBN ke buku\r\n    mapping(string => Book) private books;\r\n\r\n    // Mapping untuk admin\r\n    mapping(address => bool) private admins;\r\n\r\n    // Konstruktor, menambahkan alamat admin saat kontrak dibuat\r\n    constructor() {\r\n        admins[msg.sender] = true;\r\n    }\r\n\r\n    // Modifikasi untuk memeriksa apakah pemanggil adalah admin\r\n    modifier onlyAdmin() {\r\n        require(admins[msg.sender], \"Hanya admin yang dapat mengakses fungsi ini\");\r\n        _;\r\n    }\r\n\r\n    // Fungsi untuk menambahkan buku baru\r\n    function tambahBuku(string memory _isbn, string memory _judul, uint256 _tahunDibuat, string memory _penulis) public onlyAdmin {\r\n        // Pastikan ISBN belum ada\r\n        require(bytes(books[_isbn].judul).length == 0, \"Buku dengan ISBN ini sudah terdaftar\");\r\n\r\n        // Tambahkan buku baru\r\n        books[_isbn] = Book(_judul, _tahunDibuat, _penulis);\r\n    }\r\n\r\n    // Fungsi untuk memperbarui buku berdasarkan ISBN\r\n    function updateBook(string memory _isbn, string memory _judul, uint256 _tahunDibuat, string memory _penulis) public onlyAdmin {\r\n        // Pastikan buku dengan ISBN ini ada\r\n        require(bytes(books[_isbn].judul).length > 0, \"Buku dengan ISBN ini tidak terdaftar\");\r\n\r\n        // Perbarui buku\r\n        books[_isbn] = Book(_judul, _tahunDibuat, _penulis);\r\n    }\r\n\r\n    // Fungsi untuk menghapus buku berdasarkan ISBN\r\n    function hapusBuku(string memory _isbn) public onlyAdmin {\r\n        // Pastikan buku dengan ISBN ini ada\r\n        require(bytes(books[_isbn].judul).length > 0, \"Buku dengan ISBN ini tidak terdaftar\");\r\n\r\n        // Hapus buku\r\n        delete books[_isbn];\r\n    }\r\n\r\n    // Fungsi untuk mendapatkan data buku berdasarkan ISBN\r\n    function cariBuku(string memory _isbn) public view returns (string memory, uint256, string memory) {\r\n        // Pastikan buku dengan ISBN ini ada\r\n        require(bytes(books[_isbn].judul).length > 0, \"Buku dengan ISBN ini tidak terdaftar\");\r\n\r\n        // Ambil data buku\r\n        Book memory book = books[_isbn];\r\n        return (book.judul, book.tahunDibuat, book.penulis);\r\n    }\r\n\r\n    // Fungsi untuk menambahkan admin baru\r\n    function tambahAdmin(address _admin) public onlyAdmin {\r\n        admins[_admin] = true;\r\n    }\r\n\r\n    // Fungsi untuk menghapus admin\r\n    function hapusAdmin(address _admin) public onlyAdmin {\r\n        admins[_admin] = false;\r\n    }\r\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
